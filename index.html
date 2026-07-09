@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>타카호출하기</title>
-    <!-- 귀여운 둥근 폰트(Jua) 불러오기 -->
     <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -16,9 +16,12 @@
             align-items: center; 
             min-height: 100vh; 
             background-color: #ffe4e8; 
-            /* 고양이 귀와 꼬리를 가진 캐릭터 전신 패턴 (코드로 직접 그린 SVG Data URI) */
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='100' height='100'><g transform='translate(0, 5)' opacity='0.75'><path d='M 65 75 C 90 70, 85 45, 70 55' fill='none' stroke='%23ffb6c1' stroke-width='6' stroke-linecap='round'/><rect x='42' y='80' width='5' height='12' fill='%23ffffff' rx='2'/><rect x='53' y='80' width='5' height='12' fill='%23ffffff' rx='2'/><path d='M 40 50 Q 50 45, 60 50 L 68 82 C 68 85, 32 85, 32 82 Z' fill='%23ffccd5'/><path d='M 38 55 Q 25 65, 32 75' fill='none' stroke='%23ffffff' stroke-width='5' stroke-linecap='round'/><path d='M 62 55 Q 75 65, 68 75' fill='none' stroke='%23ffffff' stroke-width='5' stroke-linecap='round'/><circle cx='50' cy='35' r='18' fill='%23ffffff'/><path d='M 35 25 Q 30 5, 45 18' fill='%23ffb6c1' stroke-linejoin='round'/><path d='M 65 25 Q 70 5, 55 18' fill='%23ffb6c1' stroke-linejoin='round'/><circle cx='43' cy='37' r='2.5' fill='%23ff7b93'/><circle cx='57' cy='37' r='2.5' fill='%23ff7b93'/><path d='M 48 41 Q 50 43, 52 41' fill='none' stroke='%23ff7b93' stroke-width='1.5' stroke-linecap='round'/><ellipse cx='37' cy='40' rx='3' ry='1.5' fill='%23ffb6c1'/><ellipse cx='63' cy='40' rx='3' ry='1.5' fill='%23ffb6c1'/></g></svg>");
-            background-size: 85px 85px; /* 캐릭터 크기와 반복 간격 조정 */
+            
+            /* 💡 업로드하신 핀터레스트 배경 이미지 적용 */
+            background-image: url('IMG_0916.jpeg');
+            background-size: 130px; /* 패턴이 너무 크면 숫자를 줄이고, 작으면 늘리세요 */
+            background-repeat: repeat; /* 반복 패턴으로 깔리게 설정 */
+            
             font-family: 'Jua', sans-serif; 
             color: #ff7b93; 
         }
@@ -35,31 +38,16 @@
             border: 3px dashed #ffc0cb;
         }
 
-        h1 { 
-            font-size: 2.2rem; 
-            margin-bottom: 5px; 
-            color: #ff6b8b;
-        }
-        
-        .subtitle {
-            font-size: 1.1rem;
-            color: #ffa8b6;
-            margin-bottom: 25px;
-        }
+        h1 { font-size: 2.2rem; margin-bottom: 5px; color: #ff6b8b; }
+        .subtitle { font-size: 1.1rem; color: #ffa8b6; margin-bottom: 25px; }
 
-        /* 핑크 버튼 디자인 */
         .btn { 
-            width: 130px; 
-            height: 130px; 
-            border-radius: 50%; 
+            width: 130px; height: 130px; border-radius: 50%; 
             background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-            border: none; 
-            cursor: pointer; 
+            border: none; cursor: pointer; 
             box-shadow: 0 10px 20px rgba(255, 154, 158, 0.4), inset 0 -5px 10px rgba(0,0,0,0.1); 
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
+            display: inline-flex; justify-content: center; align-items: center;
         }
 
         .btn:active { 
@@ -67,11 +55,8 @@
             box-shadow: 0 5px 10px rgba(255, 154, 158, 0.4), inset 0 -2px 5px rgba(0,0,0,0.1); 
         }
 
-        /* 오류가 해결된 호환성 100% 발바닥 아이콘 */
         .paw-icon {
-            fill: white;
-            width: 65px;
-            height: 65px;
+            color: white; font-size: 55px; 
             animation: float 2s ease-in-out infinite;
         }
 
@@ -81,30 +66,13 @@
             100% { transform: translateY(0px); }
         }
 
-        /* 상태 메시지 구역 */
         .status { 
-            margin-top: 25px; 
-            font-size: 1.1rem; 
-            color: #ff8fa3; 
-            min-height: 25px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 6px; 
+            margin-top: 25px; font-size: 1.1rem; color: #ff8fa3; 
+            min-height: 25px; display: flex; justify-content: center; align-items: center; gap: 8px; 
         }
 
-        .inline-icon {
-            width: 20px;
-            height: 20px;
-        }
-
-        .spin {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
-        }
+        .spin { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -113,38 +81,48 @@
         <p class="subtitle">타카가 필요한 순간! 지금 눌러서 부르기</p>
         
         <button class="btn" id="trigger" onclick="wake()">
-            <!-- 어떤 브라우저에서도 깨지지 않는 깔끔한 발바닥 커스텀 SVG -->
-            <svg class="paw-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 9c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4zm-7.5 4c-1.933 0-3.5-1.567-3.5-3.5s1.567-3.5 3.5-3.5 3.5 1.567 3.5 3.5-1.567 3.5-3.5 3.5zm15 0c-1.933 0-3.5-1.567-3.5-3.5s1.567-3.5 3.5-3.5 3.5 1.567 3.5 3.5-1.567 3.5-3.5 3.5zm-7.5 9c-3.593 0-6.905-1.894-8.818-4.996-.543-.88-.242-2.036.637-2.583 3.655-2.274 8.784-2.274 12.439 0 .88.547 1.182 1.704.637 2.583-1.913 3.102-5.225 4.996-8.818 4.996z" />
-            </svg>
+            <i class="fa-solid fa-paw paw-icon"></i>
         </button>
         
         <div class="status" id="msg">
-            <svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span>호출 대기중...</span>
+            <i class="fa-solid fa-ellipsis"></i>
+            <span>연결 대기중...</span>
         </div>
     </div>
 
     <script>
-        const svgLoading = `<svg class="inline-icon spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>`;
-        const svgSuccess = `<svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
-        const svgError = `<svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
-
         function wake() {
             const msg = document.getElementById('msg');
-            const url = "https://script.google.com/macros/s/AKfycbw3FHOmMWb-bdpMOzLvto7CJOKRcUNJQuTMnR8lYOOu4iHulO8M0loDyeMS_LkvT7k8/exec"; 
+            
+            // 1. 주소에서 'id' 가져오기
+            const urlParams = new URLSearchParams(window.location.search);
+            const secretId = urlParams.get('id'); 
+            
+            // 💡 2. 허용된 6명의 비밀코드 목록 (여기에 없으면 전송 자체를 차단)
+            const validIds = ['xdmh', 'jaym', 'dgrt', 'tgdy', 'aprk', 'taiy'];
+            
+            // 💡 3. 링크가 잘못되었을 때의 경고 처리
+            if (!secretId || !validIds.includes(secretId)) {
+                msg.style.color = "#ef4444";
+                msg.innerHTML = `<i class="fa-solid fa-link-slash"></i><span>전용 링크가 아닙니다! 주소를 확인해주세요.</span>`;
+                return; // 여기서 멈춤 (서버로 신호를 보내지 않음)
+            }
+            
+            // 4. 정상적인 링크일 경우에만 구글로 발송
+            const baseUrl = "https://script.google.com/macros/s/AKfycbw3FHOmMWb-bdpMOzLvto7CJOKRcUNJQuTMnR8lYOOu4iHulO8M0loDyeMS_LkvT7k8/exec"; 
+            const url = baseUrl + "?id=" + encodeURIComponent(secretId);
             
             msg.style.color = "#ff6b8b";
-            msg.innerHTML = svgLoading + "<span>신호 보내는 중...</span>";
+            msg.innerHTML = `<i class="fa-solid fa-spinner spin"></i><span>신호 보내는 중...</span>`;
             
             fetch(url)
                 .then(() => {
                     msg.style.color = "#ff477e";
-                    msg.innerHTML = svgSuccess + "<span>호출 성공! 곧 달려갑니다</span>";
+                    msg.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>호출 성공! 곧 달려갑니다</span>`;
                 })
                 .catch(() => {
                     msg.style.color = "#ef4444";
-                    msg.innerHTML = svgError + "<span>실패했어요! 다시 눌러주세요</span>";
+                    msg.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i><span>실패했어요! 다시 눌러주세요</span>`;
                 });
         }
     </script>
