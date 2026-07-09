@@ -15,16 +15,23 @@
             justify-content: center; 
             align-items: center; 
             min-height: 100vh; 
-            background-color: #ffe4e8; 
+            background-color: #ffe4e8; /* 이미지가 모자란 부분은 이 파스텔 핑크색으로 자연스럽게 채워집니다 */
             
-            /* 💡 업로드하신 핀터레스트 배경 이미지 적용 */
             background-image: url('IMG_0916.jpeg');
-            background-size: 130px; /* 패턴이 너무 크면 숫자를 줄이고, 작으면 늘리세요 */
-            background-repeat: repeat; /* 반복 패턴으로 깔리게 설정 */
+            
+            /* 💡 가로를 화면에 100% 딱 맞추고, 세로는 비율을 유지해 커지게 하는 마법의 코드 */
+            background-size: 100% auto; 
+            
+            /* 이미지를 화면 맨 위쪽부터 보여지게 정렬합니다 */
+            background-position: top center; 
+            
+            /* 이미지를 바둑판처럼 반복하지 않고 한 번만 큼직하게 띄웁니다 */
+            background-repeat: no-repeat; 
             
             font-family: 'Jua', sans-serif; 
             color: #ff7b93; 
         }
+
 
         .card { 
             text-align: center; 
@@ -86,7 +93,7 @@
         
         <div class="status" id="msg">
             <i class="fa-solid fa-ellipsis"></i>
-            <span>연결 대기중...</span>
+            <span>호출 대기중...</span>
         </div>
     </div>
 
@@ -104,7 +111,7 @@
             // 💡 3. 링크가 잘못되었을 때의 경고 처리
             if (!secretId || !validIds.includes(secretId)) {
                 msg.style.color = "#ef4444";
-                msg.innerHTML = `<i class="fa-solid fa-link-slash"></i><span>전용 링크가 아닙니다! 주소를 확인해주세요.</span>`;
+                msg.innerHTML = `<i class="fa-solid fa-link-slash"></i><span>유효하지 않은 링크! 링크 수정 금지</span>`;
                 return; // 여기서 멈춤 (서버로 신호를 보내지 않음)
             }
             
@@ -118,7 +125,7 @@
             fetch(url)
                 .then(() => {
                     msg.style.color = "#ff477e";
-                    msg.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>호출 성공! 곧 달려갑니다</span>`;
+                    msg.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>호출 성공! 곧 디코로 찾아갈게요~</span>`;
                 })
                 .catch(() => {
                     msg.style.color = "#ef4444";
