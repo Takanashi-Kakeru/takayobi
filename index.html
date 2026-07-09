@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAKE UP!</title>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #0f172a; color: #f8fafc; font-family: sans-serif; margin: 0; }
+        .card { text-align: center; background: #1e293b; padding: 40px 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 85%; max-width: 340px; }
+        h1 { font-size: 1.6rem; margin-bottom: 20px; }
+        .btn { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #b91c1c); border: none; color: white; font-size: 2.5rem; cursor: pointer; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+        .btn:active { transform: scale(0.95); }
+        .status { margin-top: 20px; font-size: 0.9rem; color: #94a3b8; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>모닝콜 깨우기</h1>
+        <button class="btn" id="trigger" onclick="wake()">🔔</button>
+        <div class="status" id="msg">버튼을 누르면 상대방이 깹니다</div>
+    </div>
+    <script>
+        function wake() {
+            const msg = document.getElementById('msg');
+            // 💡 본인의 구글 웹 앱 URL을 아래 따옴표 안에 붙여넣으세요!
+            const url = "https://script.google.com/macros/s/.../exec"; 
+            
+            msg.innerText = "신호 보내는 중...";
+            fetch(url)
+                .then(() => msg.innerText = "🚀 알람이 울렸습니다!")
+                .catch(() => msg.innerText = "실패! 다시 시도해 주세요.");
+        }
+    </script>
+</body>
+</html>
