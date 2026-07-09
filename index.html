@@ -15,15 +15,14 @@
 </head>
 <body>
     <div class="card">
-        <h1>모닝콜 깨우기</h1>
+        <h1>타카호출하기</h1>
         <button class="btn" id="trigger" onclick="wake()">🔔</button>
-        <div class="status" id="msg">버튼을 누르면 상대방이 깹니다</div>
+        <div class="status" id="msg">타카가 필요한 순간! 지금 불러보세요</div>
     </div>
     <script>
         function wake() {
             const msg = document.getElementById('msg');
-            // 💡 본인의 구글 웹 앱 URL을 아래 따옴표 안에 붙여넣으세요!
-            const url = "https://script.google.com/macros/s/.../exec"; 
+            const url = "https://script.google.com/macros/s/AKfycbw3FHOmMWb-bdpMOzLvto7CJOKRcUNJQuTMnR8lYOOu4iHulO8M0loDyeMS_LkvT7k8/exec"; 
             
             msg.innerText = "신호 보내는 중...";
             fetch(url)
