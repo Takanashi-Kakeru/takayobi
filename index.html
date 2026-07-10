@@ -6,78 +6,41 @@
     <title>타카호출하기</title>
     <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
         body { 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            background-color: #ffe4e8; /* 이미지가 모자란 부분은 이 파스텔 핑크색으로 자연스럽게 채워집니다 */
-            
-            background-image: url('IMG_0916.jpeg');
-            
-            /* 💡 가로를 화면에 100% 딱 맞추고, 세로는 비율을 유지해 커지게 하는 마법의 코드 */
-            background-size: cover; 
-            
-            /* 이미지를 화면 맨 위쪽부터 보여지게 정렬합니다 */
-            background-position: center; 
-            
-            /* 이미지를 바둑판처럼 반복하지 않고 한 번만 큼직하게 띄웁니다 */
-            background-repeat: no-repeat; 
-            
-            font-family: 'Jua', sans-serif; 
-            color: #ff7b93; 
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; 
+            background-color: #ffe4e8; background-image: url('IMG_0916.jpeg');
+            background-size: 100% auto; background-position: top center; background-repeat: no-repeat; 
+            font-family: 'Jua', sans-serif; color: #ff7b93; 
         }
-
-
         .card { 
-            text-align: center; 
-            background: rgba(255, 255, 255, 0.95); 
-            padding: 40px 30px; 
-            border-radius: 35px; 
-            box-shadow: 0 15px 35px rgba(255, 182, 193, 0.5); 
-            width: 85%; 
-            max-width: 340px; 
-            backdrop-filter: blur(5px);
-            border: 3px dashed #ffc0cb;
+            text-align: center; background: rgba(255, 255, 255, 0.95); padding: 40px 30px; 
+            border-radius: 35px; box-shadow: 0 15px 35px rgba(255, 182, 193, 0.5); 
+            width: 85%; max-width: 340px; backdrop-filter: blur(5px); border: 3px dashed #ffc0cb;
         }
-
         h1 { font-size: 2.2rem; margin-bottom: 5px; color: #ff6b8b; }
         .subtitle { font-size: 1.1rem; color: #ffa8b6; margin-bottom: 25px; }
 
         .btn { 
             width: 130px; height: 130px; border-radius: 50%; 
             background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-            border: none; cursor: pointer; 
+            border: none; cursor: pointer; display: inline-flex; justify-content: center; align-items: center;
             box-shadow: 0 10px 20px rgba(255, 154, 158, 0.4), inset 0 -5px 10px rgba(0,0,0,0.1); 
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            display: inline-flex; justify-content: center; align-items: center;
+            transition: all 0.3s ease;
         }
+        .btn:active { transform: scale(0.9) translateY(5px); }
+        
+        /* 타이머 동작 시 버튼 비활성화 효과 */
+        .btn.disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; animation: none; transform: none; }
 
-        .btn:active { 
-            transform: scale(0.9) translateY(5px); 
-            box-shadow: 0 5px 10px rgba(255, 154, 158, 0.4), inset 0 -2px 5px rgba(0,0,0,0.1); 
-        }
+        .paw-icon { color: white; font-size: 55px; animation: float 2s ease-in-out infinite; }
+        .btn.disabled .paw-icon { color: #94a3b8; animation: none; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0px); } }
 
-        .paw-icon {
-            color: white; font-size: 55px; 
-            animation: float 2s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
-            100% { transform: translateY(0px); }
-        }
-
-        .status { 
-            margin-top: 25px; font-size: 1.1rem; color: #ff8fa3; 
-            min-height: 25px; display: flex; justify-content: center; align-items: center; gap: 8px; 
-        }
-
+        .status { margin-top: 25px; font-size: 1.1rem; color: #ff8fa3; min-height: 25px; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .spin { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
@@ -92,44 +55,103 @@
         </button>
         
         <div class="status" id="msg">
-            <i class="fa-solid fa-ellipsis"></i>
-            <span>호출 대기중...</span>
+            <i class="fa-solid fa-ellipsis"></i><span>연결 대기중...</span>
         </div>
     </div>
 
     <script>
+        // 구글 공식 효과음 세팅
+        const whistleSnd = new Audio('https://actions.google.com/sounds/v1/sports/referee_whistle.ogg');
+        const fanfareSnd = new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_success_fanfare.ogg');
+        
+        const btn = document.getElementById('trigger');
+        const msg = document.getElementById('msg');
+        
+        // 1. 페이지 로딩 시 타이머가 도는 중인지 체크
+        window.onload = updateTimer;
+
+        // 2. 5분 타이머 작동 함수
+        function startCooldown() {
+            localStorage.setItem('cooldownEnd', Date.now() + (5 * 60 * 1000));
+            updateTimer();
+        }
+
+        // 3. 타이머 화면 업데이트 함수
+        function updateTimer() {
+            const end = localStorage.getItem('cooldownEnd');
+            if (end) {
+                const left = Math.ceil((end - Date.now()) / 1000);
+                if (left > 0) {
+                    btn.classList.add('disabled');
+                    btn.onclick = null; // 클릭 완전 차단
+                    
+                    const m = Math.floor(left / 60).toString().padStart(2, '0');
+                    const s = (left % 60).toString().padStart(2, '0');
+                    msg.innerHTML = `<i class="fa-solid fa-clock"></i><span>다음 호출까지 ${m}:${s} 대기</span>`;
+                    msg.style.color = "#94a3b8";
+                    
+                    setTimeout(updateTimer, 1000); // 1초마다 반복
+                } else {
+                    // 타이머 종료 시 복구
+                    localStorage.removeItem('cooldownEnd');
+                    btn.classList.remove('disabled');
+                    btn.onclick = wake; // 클릭 부활
+                    msg.innerHTML = `<i class="fa-solid fa-ellipsis"></i><span>연결 대기중...</span>`;
+                    msg.style.color = "#ff8fa3";
+                }
+            }
+        }
+
         function wake() {
-            const msg = document.getElementById('msg');
-            
-            // 1. 주소에서 'id' 가져오기
+            // 호루라기 재생 (클릭 즉시)
+            whistleSnd.currentTime = 0; 
+            whistleSnd.play();
+
             const urlParams = new URLSearchParams(window.location.search);
             const secretId = urlParams.get('id'); 
-            
-            // 💡 2. 허용된 6명의 비밀코드 목록 (여기에 없으면 전송 자체를 차단)
             const validIds = ['xdmh', 'jaym', 'dgrt', 'tgdy', 'aprk', 'taiy'];
             
-            // 💡 3. 링크가 잘못되었을 때의 경고 처리
             if (!secretId || !validIds.includes(secretId)) {
                 msg.style.color = "#ef4444";
-                msg.innerHTML = `<i class="fa-solid fa-link-slash"></i><span>유효하지 않은 링크! 링크 수정 금지</span>`;
-                return; // 여기서 멈춤 (서버로 신호를 보내지 않음)
+                msg.innerHTML = `<i class="fa-solid fa-link-slash"></i><span>전용 링크가 아닙니다!</span>`;
+                return; 
             }
             
-            // 4. 정상적인 링크일 경우에만 구글로 발송
             const baseUrl = "https://script.google.com/macros/s/AKfycbw3FHOmMWb-bdpMOzLvto7CJOKRcUNJQuTMnR8lYOOu4iHulO8M0loDyeMS_LkvT7k8/exec"; 
             const url = baseUrl + "?id=" + encodeURIComponent(secretId);
             
             msg.style.color = "#ff6b8b";
             msg.innerHTML = `<i class="fa-solid fa-spinner spin"></i><span>신호 보내는 중...</span>`;
             
+            // 서버 응답 받아오기 (json 해석)
             fetch(url)
-                .then(() => {
-                    msg.style.color = "#ff477e";
-                    msg.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>호출 성공! 곧 디코로 찾아갈게요~</span>`;
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "error") {
+                        if (data.msg === "dnd") {
+                            // 방해금지 모드일 때
+                            msg.style.color = "#8b5cf6"; // 보라색
+                            msg.innerHTML = `<i class="fa-solid fa-moon"></i><span>타카님은 지금 휴식 중입니다 💤</span>`;
+                        } else if (data.msg === "cooldown") {
+                            // 누군가 방금 눌러서 서버에 쿨타임이 걸려있을 때 (강제 타이머 시작)
+                            startCooldown();
+                        }
+                    } else {
+                        // 성공했을 때: 팡파르 재생 & 폭죽 터트리기
+                        fanfareSnd.currentTime = 0;
+                        fanfareSnd.play();
+                        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                        
+                        msg.style.color = "#ff477e";
+                        msg.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>호출 성공! 곧 달려갑니다 🎉</span>`;
+                        
+                        // 3초 뒤에 5분 대기 타이머 시작
+                        setTimeout(() => { startCooldown(); }, 3000);
+                    }
                 })
                 .catch(() => {
                     msg.style.color = "#ef4444";
-                    msg.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i><span>실패했어요! 다시 눌러주세요</span>`;
+                    msg.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i><span>전송 실패! 다시 눌러주세요</span>`;
                 });
         }
     </script>
