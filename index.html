@@ -32,8 +32,6 @@
             transition: all 0.3s ease;
         }
         .btn:active { transform: scale(0.9) translateY(5px); }
-        
-        /* 타이머 동작 시 버튼 비활성화 효과 */
         .btn.disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; animation: none; transform: none; }
 
         .paw-icon { color: white; font-size: 55px; animation: float 2s ease-in-out infinite; }
@@ -60,60 +58,59 @@
     </div>
 
     <script>
-        // 구글 공식 효과음 세팅
-        const whistleSnd = new Audio('https://actions.google.com/sounds/v1/sports/referee_whistle.ogg');
-        const fanfareSnd = new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_success_fanfare.ogg');
+        const whistleSnd = new Audio('whistle.mp3');
+        const successSnd = new Audio('success.mp3');
+        const dndSnd = new Audio('dnd.mp3');
+        const errorSnd = new Audio('error.mp3');
         
         const btn = document.getElementById('trigger');
         const msg = document.getElementById('msg');
         
-        // 1. 페이지 로딩 시 타이머가 도는 중인지 체크
         window.onload = updateTimer;
 
-        // 2. 5분 타이머 작동 함수
         function startCooldown() {
             localStorage.setItem('cooldownEnd', Date.now() + (5 * 60 * 1000));
             updateTimer();
         }
 
-        // 3. 타이머 화면 업데이트 함수
         function updateTimer() {
             const end = localStorage.getItem('cooldownEnd');
             if (end) {
                 const left = Math.ceil((end - Date.now()) / 1000);
                 if (left > 0) {
                     btn.classList.add('disabled');
-                    btn.onclick = null; // 클릭 완전 차단
+                    btn.onclick = null; 
                     
                     const m = Math.floor(left / 60).toString().padStart(2, '0');
                     const s = (left % 60).toString().padStart(2, '0');
                     msg.innerHTML = `<i class="fa-solid fa-clock"></i><span>다음 호출까지 ${m}:${s} 대기</span>`;
                     msg.style.color = "#94a3b8";
                     
-                    setTimeout(updateTimer, 1000); // 1초마다 반복
+                    setTimeout(updateTimer, 1000); 
                 } else {
-                    // 타이머 종료 시 복구
                     localStorage.removeItem('cooldownEnd');
                     btn.classList.remove('disabled');
-                    btn.onclick = wake; // 클릭 부활
-                    msg.innerHTML = `<i class="fa-solid fa-ellipsis"></i><span>연결 대기중...</span>`;
+                    btn.onclick = wake; 
+                    msg.innerHTML = `<i class="fa-solid fa-ellipsis"></i><span>호출 대기중</span>`;
                     msg.style.color = "#ff8fa3";
                 }
             }
         }
 
         function wake() {
-            // 호루라기 재생 (클릭 즉시)
             whistleSnd.currentTime = 0; 
-            whistleSnd.play();
+            whistleSnd.play().catch(e => console.log(e));
 
             const urlParams = new URLSearchParams(window.location.search);
             const secretId = urlParams.get('id'); 
             const validIds = ['xdmh', 'jaym', 'dgrt', 'tgdy', 'aprk', 'taiy'];
             
             if (!secretId || !validIds.includes(secretId)) {
+                errorSnd.currentTime = 0; 
+                errorSnd.play().catch(e => console.log(e));
+                
                 msg.style.color = "#ef4444";
-                msg.innerHTML = `<i class="fa-solid fa-link-slash"></i><span>전용 링크가 아닙니다!</span>`;
+                msg.innerHTML = `<i class="fa-solid fa-link-slash"></i><span>전용 링크가 아닙니다! 주소를 확인해주세요.</span>`;
                 return; 
             }
             
@@ -123,33 +120,37 @@
             msg.style.color = "#ff6b8b";
             msg.innerHTML = `<i class="fa-solid fa-spinner spin"></i><span>신호 보내는 중...</span>`;
             
-            // 서버 응답 받아오기 (json 해석)
             fetch(url)
                 .then(res => res.json())
                 .then(data => {
                     if (data.status === "error") {
-                        if (data.msg === "dnd") {
-                            // 방해금지 모드일 때
-                            msg.style.color = "#8b5cf6"; // 보라색
-                            msg.innerHTML = `<i class="fa-solid fa-moon"></i><span>타카님은 지금 휴식 중입니다 💤</span>`;
+                        if (data.msg === "invalid") {
+                            errorSnd.currentTime = 0; errorSnd.play().catch(e => {});
+                            msg.style.color = "#ef4444";
+                            msg.innerHTML = `<i class="fa-solid fa-link-slash"></i><span>유효하지 않은 링크입니다.</span>`;
+                        }
+                        else if (data.msg === "dnd") {
+                            dndSnd.currentTime = 0; dndSnd.play().catch(e => {});
+                            msg.style.color = "#8b5cf6"; 
+                            msg.innerHTML = `<i class="fa-solid fa-moon"></i><span>타카님은 지금 휴식 중입니다</span>`;
                         } else if (data.msg === "cooldown") {
-                            // 누군가 방금 눌러서 서버에 쿨타임이 걸려있을 때 (강제 타이머 시작)
+                            errorSnd.currentTime = 0; errorSnd.play().catch(e => {});
                             startCooldown();
                         }
                     } else {
-                        // 성공했을 때: 팡파르 재생 & 폭죽 터트리기
-                        fanfareSnd.currentTime = 0;
-                        fanfareSnd.play();
+
+                        successSnd.currentTime = 0;
+                        successSnd.play().catch(e => {}); 
                         confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
                         
                         msg.style.color = "#ff477e";
-                        msg.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>호출 성공! 곧 달려갑니다 🎉</span>`;
+                        msg.innerHTML = `<i class="fa-solid fa-circle-check"></i><span>호출 성공! 곧 달려갑니다</span>`;
                         
-                        // 3초 뒤에 5분 대기 타이머 시작
                         setTimeout(() => { startCooldown(); }, 3000);
                     }
                 })
                 .catch(() => {
+                    errorSnd.currentTime = 0; errorSnd.play().catch(e => {});
                     msg.style.color = "#ef4444";
                     msg.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i><span>전송 실패! 다시 눌러주세요</span>`;
                 });
