@@ -58,14 +58,22 @@
     </div>
 
     <script>
-        const whistleSnd = new Audio('whistle.mp3');
-        const successSnd = new Audio('success.mp3');
-        const dndSnd = new Audio('dnd.mp3');
-        const errorSnd = new Audio('error.mp3');
+        const whistleSnd = new Audio('whistle.mp3'); 
+        const successSnd = new Audio('success.mp3'); 
+        const dndSnd = new Audio('dnd.mp3');         
+        const errorSnd = new Audio('error.mp3');     
         
         const btn = document.getElementById('trigger');
         const msg = document.getElementById('msg');
         
+        function stopAllSounds() {
+            const sounds = [whistleSnd, successSnd, dndSnd, errorSnd];
+            sounds.forEach(snd => {
+                snd.pause();
+                snd.currentTime = 0;
+            });
+        }
+
         window.onload = updateTimer;
 
         function startCooldown() {
@@ -98,7 +106,7 @@
         }
 
         function wake() {
-            whistleSnd.currentTime = 0; 
+            stopAllSounds();
             whistleSnd.play().catch(e => console.log(e));
 
             const urlParams = new URLSearchParams(window.location.search);
@@ -106,8 +114,8 @@
             const validIds = ['xdmh', 'jaym', 'dgrt', 'tgdy', 'aprk', 'taiy'];
             
             if (!secretId || !validIds.includes(secretId)) {
-                errorSnd.currentTime = 0; 
-                errorSnd.play().catch(e => console.log(e));
+                stopAllSounds();
+                errorSnd.play().catch(e => console.log(e)); 
                 
                 msg.style.color = "#ef4444";
                 msg.innerHTML = `<i class="fa-solid fa-link-slash"></i><span>전용 링크가 아닙니다! 주소를 확인해주세요.</span>`;
@@ -123,23 +131,23 @@
             fetch(url)
                 .then(res => res.json())
                 .then(data => {
+                    stopAllSounds();
+
                     if (data.status === "error") {
                         if (data.msg === "invalid") {
-                            errorSnd.currentTime = 0; errorSnd.play().catch(e => {});
+                            errorSnd.play().catch(e => {}); 
                             msg.style.color = "#ef4444";
                             msg.innerHTML = `<i class="fa-solid fa-link-slash"></i><span>유효하지 않은 링크입니다.</span>`;
                         }
                         else if (data.msg === "dnd") {
-                            dndSnd.currentTime = 0; dndSnd.play().catch(e => {});
+                            dndSnd.play().catch(e => {}); 
                             msg.style.color = "#8b5cf6"; 
                             msg.innerHTML = `<i class="fa-solid fa-moon"></i><span>타카님은 지금 휴식 중입니다</span>`;
                         } else if (data.msg === "cooldown") {
-                            errorSnd.currentTime = 0; errorSnd.play().catch(e => {});
+                            errorSnd.play().catch(e => {}); 
                             startCooldown();
                         }
                     } else {
-
-                        successSnd.currentTime = 0;
                         successSnd.play().catch(e => {}); 
                         confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
                         
@@ -150,7 +158,8 @@
                     }
                 })
                 .catch(() => {
-                    errorSnd.currentTime = 0; errorSnd.play().catch(e => {});
+                    stopAllSounds();
+                    errorSnd.play().catch(e => {}); 
                     msg.style.color = "#ef4444";
                     msg.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i><span>전송 실패! 다시 눌러주세요</span>`;
                 });
