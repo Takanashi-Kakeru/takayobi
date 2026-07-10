@@ -75,9 +75,9 @@
         }
 
         window.onload = updateTimer;
-
+        
         function startCooldown() {
-            localStorage.setItem('cooldownEnd', Date.now() + (5 * 60 * 1000));
+            localStorage.setItem('cooldownEnd', Date.now() + (1 * 60 * 1000));
             updateTimer();
         }
 
